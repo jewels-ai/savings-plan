@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>AR Ad – Multiple Video Options</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden; background: #000;
+    }
+    #cam {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    #ad {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      border: 2px solid #fff;
+      display: none;
+      z-index: 5;
+      background: #000;
+    }
+    #ppBtn {
+      position: absolute;
+      top: calc(50% + 140px); left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 12px;
+      font-size: 20px;
+      border: none;
+      border-radius: 50%;
+      background: #fff;
+      color: #000;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 0 12px rgba(0,0,0,.6);
+      display: none;
+    }
+    .thumbnail-bar {
+      position: absolute;
+      bottom: 90px; /* moved down from 120px */
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .thumbnail {
+      width: 60px;
+      height: 40px;
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #000;
+    }
+    .thumbnail.selected {
+      border: 2px solid #00f;
+    }
+
+    .bottom-buttons {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .bottom-buttons button,
+    .bottom-buttons a {
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .bottom-buttons img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+
+<video id="cam" autoplay muted playsinline></video>
+<video id="ad" playsinline loop></video>
+<button id="ppBtn" title="Play/Pause">▶️</button>
+
+<div class="thumbnail-bar">
+  <div class="thumbnail" data-src="advertisement/promo1.mp4">PLAN1</div>
+  <div class="thumbnail" data-src="advertisement/promo2.mp4">PLAN2</div>
+  <div class="thumbnail" data-src="advertisement/promo3.mp4">PLAN3</div>
+</div>
+
+<!-- Bottom Buttons -->
+<div class="bottom-buttons">
+  <button id="shareBtn" title="Share">
+    <img src="share logo1.png" alt="Share">
+  </button>
+   <!-- Location Button -->
+<a id="location-btn" href="https://maps.app.goo.gl/6vcDRb9r2nVuW5896" target="_blank" rel="noopener noreferrer">
+  <img src="loclogo1.png" alt="Location Icon" style="width: 40px; height: 40px;" />
+</a>
+  <a href="https://wa.me/916379907619?text=Hi%20Welcome%20to%20Fine%20Gold%20&%20Diamonds%20,%20Can%20i%20get%20more%20datails%20about%20the%20plans" target="_blank" id="whatsappBtn" title="WhatsApp">
+    <img src="logo whatsapp1.png" alt="WhatsApp">
+  </a>
+</div>
+
+<script>
+  const btn = document.getElementById('ppBtn');
+  const ad = document.getElementById('ad');
+  const cam = document.getElementById('cam');
+  const thumbnails = document.querySelectorAll('.thumbnail');
+
+  let videoLoaded = false;
+  let currentVideoSrc = '';
+  let isPlaying = false;
+
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(stream => {
+      cam.srcObject = stream;
+    })
+    .catch(err => alert('Camera error: ' + err));
+
+  thumbnails.forEach(thumbnail => {
+    thumbnail.addEventListener('click', () => {
+      const src = thumbnail.dataset.src;
+      if (src !== currentVideoSrc) {
+        currentVideoSrc = src;
+        ad.src = src;
+        ad.load();
+        ad.volume = 1;
+        videoLoaded = true;
+        ad.style.display = 'block';
+        ad.play();
+        isPlaying = true;
+        btn.innerText = '⏸️';
+        btn.style.display = 'block';
+        thumbnails.forEach(t => t.classList.remove('selected'));
+        thumbnail.classList.add('selected');
+      }
+    });
+  });
+
+  btn.addEventListener('click', () => {
+    if (!videoLoaded) return;
+
+    if (ad.paused) {
+      ad.play().then(() => {
+        btn.innerText = '⏸️';
+        isPlaying = true;
+      }).catch(e => {
+        alert('Playback failed: ' + e.message);
+      });
+    } else {
+      ad.pause();
+      btn.innerText = '▶️';
+      isPlaying = false;
+    }
+  });
+
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'AR Video',
+          text: 'Check out this amazing AR experience!',
+          url: window.location.href
+        });
+      } catch (err) {
+        console.error('Share failed:', err.message);
+      }
+    } else {
+      alert('Sharing not supported on this device.');
+    }
+  });
+</script>
+
+</body>
+</html>
