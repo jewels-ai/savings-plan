@@ -43,7 +43,7 @@
     }
     .thumbnail-bar {
       position: absolute;
-      bottom: 90px; /* moved down from 120px */
+      bottom: 90px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -110,10 +110,10 @@
   <button id="shareBtn" title="Share">
     <img src="share logo1.png" alt="Share">
   </button>
-   <!-- Location Button -->
-<a id="location-btn" href="https://maps.app.goo.gl/uhKjXVC2H6dyWs8t5" target="_blank" rel="noopener noreferrer">
-  <img src="loclogo1.png" alt="Location Icon" style="width: 40px; height: 40px;" />
-</a>
+  <!-- Location Button -->
+  <a id="location-btn" href="https://maps.app.goo.gl/uhKjXVC2H6dyWs8t5" target="_blank" rel="noopener noreferrer">
+    <img src="loclogo1.png" alt="Location Icon" style="width: 40px; height: 40px;" />
+  </a>
   <a href="https://wa.me/917019743880?text=Hi%20Welcome%20to%20Our%20Gold%20&%20Diamonds%20,%20Can%20i%20get%20more%20datails%20about%20the%20plans" target="_blank" id="whatsappBtn" title="WhatsApp">
     <img src="logo whatsapp1.png" alt="WhatsApp">
   </a>
@@ -187,6 +187,34 @@
       alert('Sharing not supported on this device.');
     }
   });
+
+  /* ------------------------------------
+     🔒 Disable Right-Click & Dev Tools
+  ------------------------------------ */
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.key === "F12" ||
+      (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) ||
+      (e.ctrlKey && e.key.toUpperCase() === "U")
+    ) {
+      e.preventDefault();
+      alert("🚫 Developer Tools are disabled!");
+    }
+  });
+
+  // Optional: Detect if DevTools are opened
+  (function devToolsDetector() {
+    const threshold = 160;
+    setInterval(() => {
+      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+      if (widthThreshold || heightThreshold) {
+        document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:40vh;'>🚫 Developer Tools Detected!</h1>";
+      }
+    }, 1000);
+  })();
 </script>
 
 </body>
